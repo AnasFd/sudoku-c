@@ -1,18 +1,12 @@
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "headers.h"
 
-#define GRID_SIZE 9
-#define SUBGRID_SIZE 3
-
-int **createGrid(){
+int **createGrid(void){
     int **grid = (int **)calloc(GRID_SIZE, sizeof(int *));
     for (int i = 0; i < GRID_SIZE; i++){
         grid[i] = (int *)calloc(GRID_SIZE, sizeof(int));
     }
     return grid;
 }
-
 
 void free_grid(int **g){
     for (int i = 0; i < GRID_SIZE; i++)

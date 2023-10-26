@@ -1,15 +1,28 @@
-#include "gridCreation.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "headers.h"
+
+#define EASY 27
+#define MEDIUM 40
+#define HARD 54
 
 int main(void) {
     // Initialisation
-    int **grid = createGrid();
-    if(!createValidGrid(grid))
-        return 0;
+    int **validGrid = createGrid();
+    if(!createValidGrid(validGrid)) {
+        perror("Unable to create a grid");
+        exit(1);
+    }
 
-    print_grid(grid);
-    free_grid(grid);
+    printf("Valid grid: \n\n");
+    print_grid(validGrid);
+    printf("\n\n");
+
+    int **easyGrid = copyOf(validGrid);
+    generateGridByDifficulty(easyGrid, EASY);
+    printf("Easy grid: \n\n");
+    print_grid(easyGrid);
+
+    free_grid(validGrid);
+    free_grid(easyGrid);
     
-    return 1;
+    return 0;
 }
