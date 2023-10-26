@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Wpedantic
-OBJS = gridCreation.o difficulty.o main.o
+OBJS = gridCreation.o difficulty.o play.o main.o
 
 all: sudoku
 

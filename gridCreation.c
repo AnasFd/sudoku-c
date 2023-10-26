@@ -15,14 +15,21 @@ void free_grid(int **g){
 }
 
 void print_grid(int **g){
+    printf("  +-0-+-1-+-2-+---3-+-4-+-5-+---6-+-7-+-8-+\n");
     for (int i = 0; i < GRID_SIZE; i++){
-        for (int j = 0; j < GRID_SIZE; j++){
-            printf("%d ", g[i][j]);
-            (j == 2 || j == 5) ? printf("\t") : 0;
+        if (i == 0 || i % 3 == 0) {
+            printf("  +---+---+---+---+---+---+---+---+---+---+\n");
         }
-        printf("\n");
-        (i == 2 || i == 5) ? printf("\n") : 0;
+        printf("%d ", i);
+        for (int j = 0; j < GRID_SIZE; j++){
+            (g[i][j] == 0) ? printf("| X ") : printf("| %d ", g[i][j]);
+            if (j == 2 || j == 5) {
+                printf("| ");
+            }
+        }
+        printf("|\n");
     }
+    printf("  +---+---+---+---+---+---+---+---+---+---+\n");
 }
 
 int isValidRow(int **grid, int row, int number){
@@ -99,33 +106,57 @@ int findEmptyCell(int **grid, int *row, int *col) {
     return 0; // No empty cell found
 }
 
-int solveSudoku(int **grid) {
-    int row, col;
+int isValidNoSubgridDuplicates(int **grid, int row, int col, int num) {
+    int startRow = (row / SUBGRID_SIZE) * SUBGRID_SIZE;
+    int startCol = (col / SUBGRID_SIZE) * SUBGRID_SIZE;
 
-    // Find the next empty cell, starting from the last known position
-    if (!findEmptyCell(grid, &row, &col))
-        return 1;
+    for (int i = startRow; i < startRow + SUBGRID_SIZE; i++) {
+        for (int j = startCol; j < startCol + SUBGRID_SIZE; j++) {
+            if (grid[i][j] == num) {
+                return 0; // Duplicate found in the same subgrid.
+            }
+        }
+    }
 
-    // Try placing numbers 1 to 9
+    return 1; // No duplicates found in the subgrid.
+}
+
+
+int fillPartialSudoku(int **grid, int row, int col) {
+    if (row == GRID_SIZE) {
+        return 1; // Successfully filled the entire grid.
+    }
+
+    if (col == GRID_SIZE) {
+        return fillPartialSudoku(grid, row + 1, 0); // Move to the next row.
+    }
+
+    if (grid[row][col] != 0) {
+        return fillPartialSudoku(grid, row, col + 1); // Cell is already filled, move to the next cell.
+    }
+
+    // Try placing numbers 1 to 9.
     for (int num = 1; num <= GRID_SIZE; num++) {
-        if (isValidPlacement(grid, row, col, num)) {
-            // Place the number
+        if (isValidPlacement(grid, row, col, num) && isValidNoSubgridDuplicates(grid, row, col, num)) {
             grid[row][col] = num;
 
-            // Recur to the next empty cell
-            if (solveSudoku(grid)) {
-                return 1; // Solved
+            // Recur to the next cell.
+            if (fillPartialSudoku(grid, row, col + 1)) {
+                return 1;
             }
 
-            // If not successful, backtrack
+            // If not successful, backtrack.
             grid[row][col] = 0;
         }
     }
-    return 0; // No solution found
+
+    return 0; // No solution found.
 }
+
+
 
 int createValidGrid(int **grid) {
     // Filling the diagonal subgrids
     fillDiagonalSubgrids(grid);
-    return (solveSudoku(grid));
+    return (fillPartialSudoku(grid, 0, 0));
 }

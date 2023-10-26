@@ -20,7 +20,8 @@ int isValidColumn(int **grid, int column, int number);
 
 /* Grid creation functions */
 int findEmptyCell(int **grid, int *row, int *col); // Could use some optimization
-int solveSudoku(int **grid);
+int isValidNoSubgridDuplicates(int **grid, int row, int col, int num);
+int fillPartialSudoku(int **grid, int row, int col);
 int createValidGrid(int **grid);
 
 #endif
